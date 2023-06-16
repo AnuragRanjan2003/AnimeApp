@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_projects/api/api_service.dart';
 import 'package:flutter_projects/ui/list_card.dart';
 
 class MainScreen extends StatefulWidget {
@@ -10,11 +11,14 @@ class MainScreen extends StatefulWidget {
 
 class _MainScreenState extends State<MainScreen> {
   int? _index = 1;
-  List<String> _list = ["Anime", "Manga", "Manwha"];
-  final String url = "https://i0.wp.com/www.flutterbeads.com/wp-content/uploads/2022/01/add-image-in-flutter-hero.png?fit=2850%2C1801&ssl=1";
+  ApiService api = ApiService.create();
+  final List<String> _list = ["Anime", "Manga", "Manwha"];
+  final String url =
+      "https://i0.wp.com/www.flutterbeads.com/wp-content/uploads/2022/01/add-image-in-flutter-hero.png?fit=2850%2C1801&ssl=1";
 
   @override
   Widget build(BuildContext context) {
+    getResponse();
     return Scaffold(
       body: SingleChildScrollView(
         child: Container(
@@ -86,7 +90,11 @@ class _MainScreenState extends State<MainScreen> {
               Expanded(
                 child: ListView.builder(
                   itemBuilder: (context, index) {
-                    return ListCard(imageUrl: url, type: "image", title: "example",status: "done");
+                    return ListCard(
+                        imageUrl: url,
+                        type: "image",
+                        title: "example",
+                        status: "done");
                   },
                   shrinkWrap: true,
                   itemCount: _list.length,
@@ -103,5 +111,16 @@ class _MainScreenState extends State<MainScreen> {
     if (ind == null) return Colors.black45;
     if (i == ind) return Colors.white;
     return Colors.black45;
+  }
+
+  void getResponse() async {
+    await api.getAllAnimes().then((value) => {
+          if (value.isSuccessful ){
+            print(" data len : ${value.body!.data!.length}\ndata val : ${value.body!.data![0].title}")
+
+          }
+          else
+            print(value.error.toString())
+        });
   }
 }
